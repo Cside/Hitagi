@@ -19,7 +19,7 @@ View at http://localhost:5000
 ## DESCRIPTION
 
 Hitagi is yet another micro web application framework
-using Plack::Request, Router::Simple, Text::MicroTemplate, and DBIx::Skinny.
+using Plack::Request, Router::Simple, Text::MicroTemplate.
 
 ### EXAMPLE
 
@@ -105,18 +105,10 @@ res method returns Plack::Response.
 
 #### Model
 
-DBIx::Skinny based.
-
     use Hitagi;
 
     set db => {
         connect_info => [ 'dbi:SQLite:','', '' ],
-        schema       => qq{
-            install_table entry => schema {
-               pk 'id';
-               columns qw/id body/;
-            };
-        }
     };
 
     db->do(q{CREATE TABLE entry ( id varchar, body text )});
@@ -158,7 +150,6 @@ PSGI supported too.
 - Plack::Request
 - Plack::Response
 - Text::MicroTemplate
-- DBIx::Skinny
 - Router::Simple
 - Data::Section::Simple
 

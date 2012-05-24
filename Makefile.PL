@@ -6,7 +6,6 @@ requires 'Data::Section::Simple';
 requires 'Plack';
 requires 'Router::Simple';
 requires 'Text::MicroTemplate';
-requires 'DBIx::Skinny';
 requires 'File::Slurp';
 
 tests 't/*.t';

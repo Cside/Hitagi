@@ -9,6 +9,7 @@ use Router::Simple;
 use Text::MicroTemplate;
 use File::Slurp qw/slurp/;
 use File::Basename qw/dirname/;
+use DBI;
 
 my $_ROUTER = Router::Simple->new;
 my ( $_DATA, $_BASE, $_DB, $_BASE_DIR );
@@ -113,24 +114,13 @@ sub args_string {
 
 
 sub set_db {
-    my ( $args ) = @_;
-    my $schema = $args->{schema} || '';
-    local $@;
-    package DB::Schema;
-    use DBIx::Skinny::Schema;
-    eval ( $schema );  ## no critic
-    1;
-    die $@ if $@;
-    package DB;
-    use DBIx::Skinny;
-    1;
-    $_DB = DB->new(
+    my $args = shift;
+    $_DB = DBI->connect->new(
+        @{$args->{connect_info}},
         {
-            dsn             => $args->{connect_info}[0] || '',
-            username        => $args->{connect_info}[1] || '',
-            password        => $args->{connect_info}[2] || '',
-            connect_options => { AutoCommit => 1 },
-        }
+            RaiseError => 1,
+            AutoCommit => 0,
+        },
     );
 }
 
@@ -217,7 +207,7 @@ Run
 =head1 DESCRIPTION
 
 Hitagi is yet another micro web application framework
-using Plack::Request, Router::Simple, Text::MicroTemplate, and DBIx::Skinny.
+using Plack::Request, Router::Simple, Text::MicroTemplate.
 
 =head2 EXAMPLE
 
@@ -303,18 +293,10 @@ res method returns Plack::Response.
 
 =head3 Using Model
 
-DBIx::Skinny based.
-
   use Hitagi;
 
   set db => {
       connect_info => [ 'dbi:SQLite:','', '' ],
-      schema       => qq{
-          install_table entry => schema {
-             pk 'id';
-             columns qw/id body/;
-          };
-      }
   };
 
   db->do(q{CREATE TABLE entry ( id varchar, body text )});
@@ -357,7 +339,7 @@ Yusuke Wada E<lt>yusuke at kamawada.comE<gt>
 
 =head1 SEE ALSO
 
-L<Plack::Request>, L<Plack::Response>, L<Text::MicroTemplate>, L<DBIx::Skinny>
+L<Plack::Request>, L<Plack::Response>, L<Text::MicroTemplate>
 
 L<Mojolicious::Lite>, L<Dancer>, L<MojaMoja>
 
