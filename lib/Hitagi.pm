@@ -2,7 +2,6 @@ package Hitagi;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use Data::Section::Simple;
 use Plack::Request;
 use Plack::Response;
 use Router::Simple;

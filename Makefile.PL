@@ -2,7 +2,6 @@ use inc::Module::Install;
 name 'Hitagi';
 all_from 'lib/Hitagi.pm';
 
-requires 'Data::Section::Simple';
 requires 'Plack';
 requires 'Router::Simple';
 requires 'Text::MicroTemplate';
