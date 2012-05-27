@@ -12,7 +12,7 @@ use File::Basename qw/dirname/;
 use DBI;
 
 my $_ROUTER = Router::Simple->new;
-my ( $_DATA, $_BASE, $_DB, $_BASE_DIR );
+my ( $_BASE, $_DB, $_BASE_DIR );
 
 sub app {
     sub {
@@ -57,13 +57,9 @@ sub render {
     $args ||= {};
     my $template = code($name) or return [ 500, [], ['Internal Server Error'] ];
     my $code = $template;
-    if( my $layout = code('layout') ){
-        $code .= ";sub content { Text::MicroTemplate::encoded_string $template->() };";
-        $code .=  $layout;
-    }
     $args->{base} = $_BASE;
     my $args_string = args_string($args);
-    no warnings; #XXX
+    #no warnings; #XXX
     local $@;
     my $renderer = eval <<  "..." or die $@; ## no critic
 sub {
@@ -76,13 +72,8 @@ sub {
 
 sub template {
     my $name = shift;
-    my $template = '';
-    $template = $_DATA->get_data_section($name);
-    local $@;
-    eval{
-        $template = slurp($name) unless $template;
-    };
-    chomp $template if $template;
+    my $template = slurp("$_BASE_DIR/template/$name.html");
+    chomp $template;
     return $template;
 }
 
@@ -161,7 +152,6 @@ sub import {
     no warnings 'redefine';
     my ( $caller, $filename ) = caller;
     $_BASE_DIR = dirname( $filename );
-    $_DATA = Data::Section::Simple->new($caller);
     my @functions = qw/get post render set db template/;
     for my $function (@functions) {
         *{"${caller}\::$function"} = \&$function;
